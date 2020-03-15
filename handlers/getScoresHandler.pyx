@@ -129,15 +129,10 @@ class handler(requestsManager.asyncRequestHandler):
 
 			# Data to return
 			data = ""
+			data += bmap.getData(sboard.totalScores, scoreboardVersion)
 			
-
-			try:
-				data += bmap.getData(sboard.totalScores, scoreboardVersion)
-				if sboard:
-					data += sboard.getScoresData()
-			except:
-				log.debug("OWO")
-			
+			if b.rankedStatus == 2:
+				data += sboard.getScoresData()
 			self.write(data)
 
 
