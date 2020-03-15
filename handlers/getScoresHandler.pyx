@@ -115,7 +115,8 @@ class handler(requestsManager.asyncRequestHandler):
 			# Data to return
 			data = ""
 			data += bmap.getData(sboard.totalScores, scoreboardVersion)
-			data += sboard.getScoresData()
+			if b.rankedStatus != rankedStatuses.PENDING:
+				data += sboard.getScoresData()
 			self.write(data)
 
 
