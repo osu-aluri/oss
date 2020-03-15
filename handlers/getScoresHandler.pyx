@@ -98,21 +98,7 @@ class handler(requestsManager.asyncRequestHandler):
 			bmap = beatmap.beatmap(md5, beatmapSetID, gameMode)
 			b = beatmap.beatmap(md5, 0)
 
-			if b.rankedStatus == rankedStatuses.PENDING:
-				if bool(mods & 128):
-					sboard = scoreboardRelaxScore.scoreboardRelax(
-					username, gameMode, bmap, setScores=True, country=country, mods=modsFilter, friends=friends
-					)
-				elif bool(mods & 8192):
-					sboard = scoreboardAutoScore.scoreboardAuto(
-					username, gameMode, bmap, setScores=True, country=country, mods=modsFilter, friends=friends
-					)
-				else:
-					sboard = scoreboard.scoreboard(
-					username, gameMode, bmap, setScores=True, country=country, mods=modsFilter, friends=friends
-					)
-			else:
-				# Create leaderboard object, link it to bmap and get all scores
+			if b.rankedStatus != rankedStatuses.PENDING:
 				if bool(mods & 128):
 					sboard = scoreboardRelax.scoreboardRelax(
 					username, gameMode, bmap, setScores=True, country=country, mods=modsFilter, friends=friends

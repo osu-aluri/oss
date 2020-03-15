@@ -37,7 +37,7 @@ from handlers import loadTestHandler
 from handlers import mapsHandler
 from handlers import osuErrorHandler
 from handlers import osuSearchHandler
-from handlers import osuSearchSetHandler#encode("utf-8", "ignore").decode("utf-8")
+from handlers import osuSearchSetHandler
 from handlers import redirectHandler
 from handlers import submitModularHandler
 from handlers import uploadScreenshotHandler
@@ -75,8 +75,8 @@ def make_app():
 		(r"/web/replays/(.*)", getFullReplayHandler.handler),
 		(r"/web/replays_relax/(.*)", getFullReplayHandlerRelax.handler),
 		(r"/web/replays_auto/(.*)", getFullReplayHandlerAuto.handler),
-		(r"/p/verify", redirectHandler.handler, dict(destination="https://minase.tk/index.php?p=2")),
-		(r"/u/(.*)", redirectHandler.handler, dict(destination="https://minase.tk/index.php?u={}")),
+		(r"/p/verify", redirectHandler.handler, dict(destination="https://osu.aluri.pw")),
+		(r"/u/(.*)", redirectHandler.handler, dict(destination="https://osu.aluri.pw/u/={}")),
 
 		(r"/api/v1/status", apiStatusHandler.handler),
 		(r"/api/v1/pp", apiPPHandler.handler),

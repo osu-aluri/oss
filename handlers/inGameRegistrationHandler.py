@@ -51,3 +51,5 @@ class handler(requestsManager.asyncRequestHandler):
 			log.info("{} created their account using ingame registration.".format(username))
 		except Exception as e:
 			log.error(e)
+	def asyncGet(self):
+		self.redirect(glob.conf['server']['serverurl'] + self.get_query_arguments)

@@ -12,6 +12,7 @@ from common.web import requestsManager
 from constants import exceptions
 from objects import glob
 from common.sentry import sentry
+import json
 
 MODULE_NAME = "get_replay"
 class handler(requestsManager.asyncRequestHandler):
@@ -50,11 +51,7 @@ class handler(requestsManager.asyncRequestHandler):
 
 			# Get user ID
 			replayData = glob.db.fetch("SELECT scores.*, users.username AS uname FROM scores LEFT JOIN users ON scores.userid = users.id WHERE scores.id = %s", [replayID])
-			if replayData['uname'] != username:
-				replayData = glob.db.fetch("SELECT scores_relax.*, users.username AS uname FROM scores_relax LEFT JOIN users ON scores_relax.userid = users.id WHERE scores_relax.id = %s", [replayID])
-				fileName = "{}_relax/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], replayID)
-				UsingRelax = True
-			else:
+			if replayData:
 				fileName = "{}/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], replayID)
 
 			# Increment 'replays watched by others' if needed
@@ -62,6 +59,7 @@ class handler(requestsManager.asyncRequestHandler):
 				if username != replayData["uname"]:
 					userUtils.incrementReplaysWatched(replayData["userid"], replayData["play_mode"])
 
+			glob.redis.publish('peppy:notification', json.dumps({"userID": userID, "message": "Relax replays currently is not supported, sorry for that, by kotypey"}))
 			# Serve replay
 			log.info("[{}] Serving replay_{}.osr".format("RELAX" if UsingRelax else "VANILLA", replayID))
 

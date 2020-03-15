@@ -146,6 +146,8 @@ class handler(requestsManager.asyncRequestHandler):
 				log.debug("Beatmap is not submitted/outdated/unknown. Score submission aborted.")
 				return
 
+
+
 		
 			length = 0
 			if s.passed:
@@ -168,6 +170,10 @@ class handler(requestsManager.asyncRequestHandler):
 				s.pp = 0
 				midPPCalcException = e
 
+
+			if beatmapInfo.rankedStatus == rankedStatuses.LOVED or beatmapInfo.rankedStatus == rankedStatuses.APPROVED or beatmapInfo.rankedStatus == rankedStatuses.QUALIFIED:
+				log.info("{} has submited score on loved/approved/qualified map")
+				s.pp = 0;
 			RXLIST = [1009, 1096 ,1097, 1164]
 			APLIST = [1254, 1164, 1252, 1163]
 					
@@ -475,7 +481,7 @@ class handler(requestsManager.asyncRequestHandler):
 				log.debug(output)
 				if UsingRelax:
 					if beatmapInfo.rankedStatus == rankedStatuses.PENDING:
-						announceMsg = "[RELAX] (UNRANKED) [https://minase.tk/?u={} {}] achieved rank #1({}) on [https://osu.ppy.sh/b/{} {}] ({})".format(
+						announceMsg = "[RELAX] (UNRANKED) [https://osu.aluri.pw/?u={} {}] achieved rank #1({}) on [https://osu.ppy.sh/b/{} {}] ({})".format(
 									userID,
 									username.encode().decode("ASCII", "ignore"),
 									beatmapInfo.beatmapID,
@@ -485,7 +491,7 @@ class handler(requestsManager.asyncRequestHandler):
 								)
 						userLogMsg = " Achieved Unranked Relax #{} rank on ".format(newScoreboard.personalBestRank)
 					else:
-						announceMsg = "[RELAX] [https://minase.tk/?u={} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({})".format(
+						announceMsg = "[RELAX] [https://osu.aluri.pw/?u={} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({})".format(
 									userID,
 									username.encode().decode("ASCII", "ignore"),
 									beatmapInfo.beatmapID,
@@ -495,7 +501,7 @@ class handler(requestsManager.asyncRequestHandler):
 						userLogMsg = " Achieved Relax #{} rank on ".format(newScoreboard.personalBestRank)
 				elif UsingAuto:
 					if beatmapInfo.rankedStatus == rankedStatuses.PENDING:
-						announceMsg = "[AUTOPILOT] (UNRANKED) [https://minase.tk/?u={} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({})".format(
+						announceMsg = "[AUTOPILOT] (UNRANKED) [https://osu.aluri.pw/?u={} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({})".format(
 									userID,
 									username.encode().decode("ASCII", "ignore"),
 									beatmapInfo.beatmapID,
@@ -504,7 +510,7 @@ class handler(requestsManager.asyncRequestHandler):
 								)
 						userLogMsg = " Achieved Unranked Autopilot #{} rank on ".format(newScoreboard.personalBestRank)
 					else:
-						announceMsg = "[AUTOPILOT] [https://minase.tk/?u={} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({})".format(
+						announceMsg = "[AUTOPILOT] [https://osu.aluri.pw/?u={} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({})".format(
 									userID,
 									username.encode().decode("ASCII", "ignore"),
 									beatmapInfo.beatmapID,
@@ -514,7 +520,7 @@ class handler(requestsManager.asyncRequestHandler):
 						userLogMsg = " Achieved Autopilot #{} rank on ".format(newScoreboard.personalBestRank)
 				else:
 					if beatmapInfo.rankedStatus == rankedStatuses.PENDING:
-						announceMsg = "[VANILLA] (UNRANKED) [https://minase.tk/?u={} {}] achieved rank #1({}pp) on [https://osu.ppy.sh/b/{} {}] ({})".format(
+						announceMsg = "[VANILLA] (UNRANKED) [https://osu.aluri.pw/?u={} {}] achieved rank #1({}pp) on [https://osu.ppy.sh/b/{} {}] ({})".format(
 									userID,
 									username.encode().decode("ASCII", "ignore"),
 									beatmapInfo.beatmapID,
@@ -524,7 +530,7 @@ class handler(requestsManager.asyncRequestHandler):
 								)
 						userLogMsg = " Achieved Unranked Vanilla #{} rank on ".format(newScoreboard.personalBestRank)
 					else:
-						announceMsg = "[VANILLA] [https://minase.tk/?u={} {}] achieved rank #1({}pp) on [https://osu.ppy.sh/b/{} {}] ({})".format(
+						announceMsg = "[VANILLA] [https://osu.aluri.pw/?u={} {}] achieved rank #1({}pp) on [https://osu.ppy.sh/b/{} {}] ({})".format(
 									userID,
 									username.encode().decode("ASCII", "ignore"),
 									round(s.pp),
@@ -556,6 +562,29 @@ class handler(requestsManager.asyncRequestHandler):
 
 				ppGained = newUserData["pp"] - oldUserData["pp"]
 				gainedRanks = oldRank - rankInfo["currentRank"]
+
+
+				glob.redis.publish('aluri:score', json.dumps({
+					"beatmap": {
+						"AR": beatmapInfo.AR,
+						"BPM": beatmapInfo.bpm,
+						"OD": beatmapInfo.OD,
+						"NAME": beatmapInfo.songName,
+						"STARS": beatmapInfo.starsStd
+					},
+
+					"score": {
+						"PP_BEFORE": oldUserData['pp'],
+						"PP_AFTER": newUserData['pp'],
+						"PP_GAINED": ppGained,
+						"RANK_BEFORE": oldRank,
+						"RANK_AFTER": rankInfo["currentRank"],
+						"RANKS_GAINED": gainedRanks
+					}
+				}))
+				
+
+
 				# Write message to client
 				self.write(output)
 			else:
