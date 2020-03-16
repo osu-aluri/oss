@@ -164,6 +164,7 @@ class handler(requestsManager.asyncRequestHandler):
 		
 			midPPCalcException = None
 			try:
+				
 				s.calculatePP()
 			except Exception as e:
 				log.error("Caught an exception in pp calculation, re-raising after saving score in db")
@@ -171,10 +172,6 @@ class handler(requestsManager.asyncRequestHandler):
 				midPPCalcException = e
 
 
-			log.info(beatmapInfo.rankedStatus)
-			if beatmapInfo.rankedStatus == rankedStatuses.LOVED or beatmapInfo.rankedStatus == rankedStatuses.QUALIFIED or beatmapInfo.rankedStatus == rankedStatuses.APPROVED or beatmapInfo.rankedStatus == rankedStatuses.PENDING or beatmapInfo.rankedStatus == rankedStatuses.NEED_UPDATE:#a
-				log.info("{} has submited score on loved/approved/qualified map")
-				s.pp = 0
 			RXLIST = [1009, 1096 ,1097, 1164]
 			APLIST = [1254, 1164, 1252, 1163]
 					
