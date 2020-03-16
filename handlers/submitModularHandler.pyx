@@ -171,7 +171,7 @@ class handler(requestsManager.asyncRequestHandler):
 				midPPCalcException = e
 
 
-			if beatmapInfo.rankedStatus == rankedStatuses.LOVED or beatmapInfo.rankedStatus == rankedStatuses.APPROVED or beatmapInfo.rankedStatus == rankedStatuses.QUALIFIED:
+			if beatmapInfo.rankedStatus != rankedStatuses.RANKED:
 				log.info("{} has submited score on loved/approved/qualified map")
 				s.pp = 0;
 			RXLIST = [1009, 1096 ,1097, 1164]
