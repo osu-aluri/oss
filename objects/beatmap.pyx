@@ -286,10 +286,10 @@ class beatmap:
 
 
 		if self.rankedStatus == rankedStatuses.LOVED:
-			rankedStatusOutput = rankedStatuses.APPROVED
+			rankedStatusOutput = rankedStatuses.LOVED
 
 		if self.rankedStatus == rankedStatuses.PENDING:
-			rankedStatusOutput = rankedStatuses.LOVED		
+			rankedStatusOutput = rankedStatuses.PENDING		
 
 
 		# Fix loved maps for old clients
