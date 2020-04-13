@@ -51,15 +51,20 @@ class handler(requestsManager.asyncRequestHandler):
 
 			# Get user ID
 			replayData = glob.db.fetch("SELECT scores.*, users.username AS uname FROM scores LEFT JOIN users ON scores.userid = users.id WHERE scores.id = %s", [replayID])
-			if replayData:
+			if replayData == None:
+				replayData = glob.db.fetch("SELECT scores.*, users.username AS uname FROM scores LEFT JOIN users ON scores.userid = users.id WHERE scores.id = %s", [replayID])
 				fileName = "{}/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], replayID)
+				UsingRelax = True
+			else:
+				fileName = "{}_relax/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], replayID)
+
 
 			# Increment 'replays watched by others' if needed
 			if replayData is not None:
 				if username != replayData["uname"]:
 					userUtils.incrementReplaysWatched(replayData["userid"], replayData["play_mode"])
 
-			glob.redis.publish('peppy:notification', json.dumps({"userID": userID, "message": "Relax replays currently is not supported, sorry for that, by kotypey"}))
+			glob.redis.publish('peppy:notification', json.dumps({"userID": userID, "message": "Relax replays are currently being worked on."}))
 			# Serve replay
 			log.info("[{}] Serving replay_{}.osr".format("RELAX" if UsingRelax else "VANILLA", replayID))
 
